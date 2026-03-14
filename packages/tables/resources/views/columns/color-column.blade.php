@@ -11,10 +11,15 @@
     @if ($state)
         style="background-color: {{ $state }}"
         @if ($isCopyable())
-            x-on:click="
-                window.navigator.clipboard.writeText(@js($state))
-                $tooltip(@js($getCopyMessage()), { timeout: @js($getCopyMessageDuration()) })
-            "
+            x-on:click="(async () => {
+                try {
+                    await window.navigator.clipboard.writeText(@js($state))
+                    $tooltip(@js($getCopyMessage()), { timeout: @js($getCopyMessageDuration()) })
+                } catch (error) {
+                    console.error('Failed to copy color:', error)
+                    $tooltip('Failed to copy', { timeout: 2000 })
+                }
+            })()"
         @endif
     @endif
 >
